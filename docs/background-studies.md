@@ -48,7 +48,7 @@ Specific Questions:
 - Google Scholar
 - Relevant standards and official technical documentation
 
-**Search terms:** strength training, 
+**Search terms:** strength training, progressive overload strength training, autoregulated resistance training
 
 **Selection criteria:**
 
@@ -63,30 +63,40 @@ Add one entry for each important source.
 
 ### Source 1
 
-- **Citation:** To be determined
-- **Research problem:**
-- **Approach or method:**
-- **Key findings:**
-- **Limitations:**
-- **Relevance to this project:**
+- **Citation:** Huang Z, Sun J, Li D, Chen C, Wang D. "Autoregulated resistance training for maximal strength enhancement: A systematic review and network meta-analysis." Journal of Exercise Science & Fitness. 2025;23(4):360-369.
+- **Research problem:** Which self-regulated training method (APRE, RPE-based, or velocity-based) most effectively improves maximal strength compared to fixed percentage-based training?
+- **Approach or method:** Systematic review and network meta-analysis of 19 randomized controlled trials, 438 total participants.
+- **Key findings:** All three autoregulation methods significantly outperformed fixed percentage-based training for strength gains; APRE ranked highest overall.
+- **Limitations:** Meta-analysis quality depends on the underlying studies included; doesn't test a rule-based automated system specifically, only human-applied autoregulation methods.
+- **Relevance to this project:** Strong, recent evidence across multiple studies that autoregulation outperforms fixed plans, directly supports the core premise of this project at a much larger scale than any single study.
 
-- **Citation:** To be determined
-- **Research problem:**
-- **Approach or method:**
-- **Key findings:**
-- **Limitations:**
-- **Relevance to this project:**
+### Source 2
+
+- **Citation:** Kassiano W, Santos-Melo V, Manske I, et al. "Progressive Overload Affects the Magnitude of Muscle Hypertrophy." Medicine & Science in Sports & Exercise. 2026.
+- **Research problem:** Does progressively increasing training load produce more muscle growth than training with constant load?
+- **Approach or method:** Within-subject design, 55 untrained women, one arm trained with progressive overload, the other without, over 8 weeks.
+- **Key findings:** Progressive overload produced substantially greater muscle growth (22.9%) than non-progressive training (11.6%).
+- **Limitations:** Untrained young women only, single muscle group (triceps), short duration (8 weeks).
+- **Relevance to this project:** Direct evidence that progressive overload itself drives results, the foundational principle my recommendation logic is built on adjusting correctly.
 
 ## 6. Comparison of existing work
 
 | Work or system | Goal | Approach | Strengths | Limitations | Relevance |
 |---|---|---|---|---|---|
-| To be determined | | | | | |
+| Strong (app) | Log workouts | Manual digital logbook, no automated guidance | Simple, reliable tracking | Gives no recommendation on what to do next |
+| Fitbod (app) | Personalize workouts automatically | AI-driven, adjusts weight/volume based on performance and recovery | Fully automated recommendations |Subscription cost | Shows demand for adaptive guidance exists, but not as a simple or explainable free tool |
+| Caliber (app) | Provide personalized coaching | Human coach reviews progress and adjusts plan weekly | Highly personalized, real human judgment | Expensive, up to $200 a month for one-on-one coaching
+| JuggernautAI (app) | Adapt powerlifting programs automatically | AI adjusts training at set/day/week/block level based on feedback | Automated, detailed adaptation across multiple timescales | Powerlifting-focused, not beginner-friendly| Confirms automated adaptive coaching is a validated approach, but complex and not accessible to beginners |
 
 ## 7. Synthesis and project opportunity
 
-Synthesize themes across the reviewed sources rather than summarizing each source independently. Identify the gap, limitation, or opportunity that motivates the capstone project.
+The research shows that weightlifting, especially when done with progressive overload and adjusted based on how each session goes, is a big help for building muscle and getting stronger. Autoregulating training based on performance works better than just following a fixed plan (Huang, 2025), and increasing the weight over time is what actually drives muscle growth, more than just training with the same weight repeatedly (Kassiano, 2026).
+
+The problem is that the current apps meant to help people build muscle either just log your workouts without telling you what to do next (Strong), use AI to give recommendations but don't explain how they came up with them (Fitbod, JuggernautAI), or require paying a lot of money for a human coach to do it for you (Caliber).
+
+This project's opportunity is to build something in between, a free, simple tool that uses the same research idea these apps and coaches rely on, adjusting your next workout based on how your last one went, but in a way that's beginner-friendly and easy to understand, instead of expensive or a black box.
 
 ## 8. References
 
-Use the citation style required by the course. If none is specified, choose one style and apply it consistently.
+1. Huang Z, Sun J, Li D, Chen C, Wang D. Autoregulated resistance training for maximal strength enhancement: A systematic review and network meta-analysis. *Journal of Exercise Science & Fitness*. 2025;23(4):360-369.
+2. Kassiano W, Santos-Melo V, Manske I, et al. Progressive Overload Affects the Magnitude of Muscle Hypertrophy. *Medicine & Science in Sports & Exercise*. 2026.
