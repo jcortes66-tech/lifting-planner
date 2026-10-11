@@ -12,7 +12,7 @@ A tool where users log their lifts and set their goals, with progress shown visu
 
 **Initial scope:**
 
-- In scope: user's current goals, target muscle group selection, progressive overload calculation and recommendations, progress tracking/display over time.
+- In scope: user's current goals, target muscle group selection, progressive overload calculation and recommendations, progress tracking/display over time, built as a mobile app (React Native) tested through Expo Go.
 
 - Out of scope: nutrition/diet tracking, social or community features.
 
