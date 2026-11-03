@@ -10,6 +10,38 @@ app.get("/api/test", (req, res) => {
   res.json({ message: "Hello from the Node.js backend" });
 });
 
+app.post("/api/logs", (req, res) => {
+  const { exercise_id, weight, reps, rpe } = req.body;
+
+  if (!Number.isInteger(exercise_id)) {
+    return res.status(400).json({ error: "exercise_id is required and must be an integer" });
+  }
+  if (typeof weight !== "number" || weight <= 0) {
+    return res.status(400).json({ error: "weight is required and must be a positive number" });
+  }
+  if (!Number.isInteger(reps) || reps <= 0) {
+    return res.status(400).json({ error: "reps is required and must be a positive integer" });
+  }
+  if (rpe !== undefined && rpe !== null && (!Number.isInteger(rpe) || rpe < 1 || rpe > 10)) {
+    return res.status(400).json({ error: "rpe must be an integer between 1 and 10" });
+  }
+
+  const exercise = db.prepare("SELECT id FROM exercises WHERE id = ?").get(exercise_id);
+  if (!exercise) {
+    return res.status(400).json({ error: `No exercise found with id ${exercise_id}` });
+  }
+
+  const result = db
+    .prepare("INSERT INTO logged_sets (exercise_id, weight, reps, rpe) VALUES (?, ?, ?, ?)")
+    .run(exercise_id, weight, reps, rpe ?? null);
+
+  const created = db
+    .prepare("SELECT * FROM logged_sets WHERE id = ?")
+    .get(result.lastInsertRowid);
+
+  res.status(201).json(created);
+});
+
 app.listen(PORT, () => {
   const { count } = db.prepare("SELECT COUNT(*) AS count FROM exercises").get();
   console.log(`Backend listening on http://localhost:${PORT}`);
