@@ -42,6 +42,21 @@ app.post("/api/logs", (req, res) => {
   res.status(201).json(created);
 });
 
+app.get("/api/logs", (req, res) => {
+  const logs = db
+    .prepare(
+      `SELECT logged_sets.id, logged_sets.user_id, logged_sets.exercise_id,
+              exercises.name AS exercise_name, logged_sets.weight,
+              logged_sets.reps, logged_sets.rpe, logged_sets.logged_at
+       FROM logged_sets
+       JOIN exercises ON exercises.id = logged_sets.exercise_id
+       ORDER BY logged_sets.logged_at DESC`
+    )
+    .all();
+
+  res.json(logs);
+});
+
 app.listen(PORT, () => {
   const { count } = db.prepare("SELECT COUNT(*) AS count FROM exercises").get();
   console.log(`Backend listening on http://localhost:${PORT}`);
