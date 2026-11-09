@@ -22,7 +22,7 @@ export default function AppTabs() {
       </NativeTabs.Trigger>
       {/* "explore" refers to app/explore.tsx — the explore screen */}
       <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Progress</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           src={require('@/assets/images/tabIcons/explore.png')}
           renderingMode="template"
