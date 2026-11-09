@@ -1,4 +1,5 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const db = require("./db");
 
 const app = express();
@@ -8,6 +9,32 @@ app.use(express.json());
 
 app.get("/api/test", (req, res) => {
   res.json({ message: "Hello from the Node.js backend" });
+});
+
+app.post("/api/register", (req, res) => {
+  const { email, password } = req.body;
+
+  if (typeof email !== "string" || !email.includes("@")) {
+    return res.status(400).json({ error: "A valid email is required" });
+  }
+  if (typeof password !== "string" || password.length < 8) {
+    return res.status(400).json({ error: "Password must be at least 8 characters" });
+  }
+
+  const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(email);
+  if (existing) {
+    return res.status(409).json({ error: "An account with that email already exists" });
+  }
+
+  // Hashing turns the password into something irreversible
+  const password_hash = bcrypt.hashSync(password, 10);
+
+  const result = db
+    .prepare("INSERT INTO users (email, password_hash) VALUES (?, ?)")
+    .run(email, password_hash);
+
+  // Never send the password or its hash back in the response.
+  res.status(201).json({ id: result.lastInsertRowid, email });
 });
 
 app.post("/api/logs", (req, res) => {
