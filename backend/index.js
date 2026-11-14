@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const db = require("./db");
 
 const app = express();
@@ -35,6 +36,28 @@ app.post("/api/register", (req, res) => {
 
   // Never send the password or its hash back in the response.
   res.status(201).json({ id: result.lastInsertRowid, email });
+});
+
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+
+  if (typeof email !== "string" || typeof password !== "string") {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  const user = db.prepare("SELECT id, password_hash FROM users WHERE email = ?").get(email);
+
+  // don't reveal whether the email exists, just that the email/password combo didn't work.
+  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+    return res.status(401).json({ error: "Incorrect email or password" });
+  }
+
+  // The mobile app will save this and send it with future requests.
+  const token = crypto.randomBytes(32).toString("hex");
+
+  db.prepare("INSERT INTO sessions (token, user_id) VALUES (?, ?)").run(token, user.id);
+
+  res.json({ token, user: { id: user.id, email } });
 });
 
 app.post("/api/logs", (req, res) => {
