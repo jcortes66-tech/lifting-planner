@@ -8,6 +8,26 @@ const PORT = 8080;
 
 app.use(express.json());
 
+// Checks for a valid Authorization header and sets req.userId if valid. Otherwise, responds with 401.
+function requireAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Login required" });
+  }
+
+  const token = authHeader.slice("Bearer ".length);
+  const session = db.prepare("SELECT user_id FROM sessions WHERE token = ?").get(token);
+
+  if (!session) {
+    return res.status(401).json({ error: "Login required" });
+  }
+
+  req.userId = session.user_id;
+  next();
+}
+
+
 app.get("/api/test", (req, res) => {
   res.json({ message: "Hello from the Node.js backend" });
 });
@@ -27,14 +47,12 @@ app.post("/api/register", (req, res) => {
     return res.status(409).json({ error: "An account with that email already exists" });
   }
 
-  // Hashing turns the password into something irreversible
   const password_hash = bcrypt.hashSync(password, 10);
 
   const result = db
     .prepare("INSERT INTO users (email, password_hash) VALUES (?, ?)")
     .run(email, password_hash);
 
-  // Never send the password or its hash back in the response.
   res.status(201).json({ id: result.lastInsertRowid, email });
 });
 
@@ -47,12 +65,10 @@ app.post("/api/login", (req, res) => {
 
   const user = db.prepare("SELECT id, password_hash FROM users WHERE email = ?").get(email);
 
-  // don't reveal whether the email exists, just that the email/password combo didn't work.
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
     return res.status(401).json({ error: "Incorrect email or password" });
   }
 
-  // The mobile app will save this and send it with future requests.
   const token = crypto.randomBytes(32).toString("hex");
 
   db.prepare("INSERT INTO sessions (token, user_id) VALUES (?, ?)").run(token, user.id);
@@ -60,7 +76,7 @@ app.post("/api/login", (req, res) => {
   res.json({ token, user: { id: user.id, email } });
 });
 
-app.post("/api/logs", (req, res) => {
+app.post("/api/logs", requireAuth, (req, res) => {
   const { exercise_id, weight, reps, rpe } = req.body;
 
   if (!Number.isInteger(exercise_id)) {
@@ -82,8 +98,8 @@ app.post("/api/logs", (req, res) => {
   }
 
   const result = db
-    .prepare("INSERT INTO logged_sets (exercise_id, weight, reps, rpe) VALUES (?, ?, ?, ?)")
-    .run(exercise_id, weight, reps, rpe ?? null);
+    .prepare("INSERT INTO logged_sets (user_id, exercise_id, weight, reps, rpe) VALUES (?, ?, ?, ?, ?)")
+    .run(req.userId, exercise_id, weight, reps, rpe ?? null);
 
   const created = db
     .prepare("SELECT * FROM logged_sets WHERE id = ?")
@@ -92,7 +108,7 @@ app.post("/api/logs", (req, res) => {
   res.status(201).json(created);
 });
 
-app.get("/api/logs", (req, res) => {
+app.get("/api/logs", requireAuth, (req, res) => {
   const logs = db
     .prepare(
       `SELECT logged_sets.id, logged_sets.user_id, logged_sets.exercise_id,
@@ -100,9 +116,10 @@ app.get("/api/logs", (req, res) => {
               logged_sets.reps, logged_sets.rpe, logged_sets.logged_at
        FROM logged_sets
        JOIN exercises ON exercises.id = logged_sets.exercise_id
+       WHERE logged_sets.user_id = ?
        ORDER BY logged_sets.logged_at DESC`
     )
-    .all();
+    .all(req.userId);
 
   res.json(logs);
 });
