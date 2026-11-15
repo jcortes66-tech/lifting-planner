@@ -76,6 +76,13 @@ app.post("/api/login", (req, res) => {
   res.json({ token, user: { id: user.id, email } });
 });
 
+app.get("/api/exercises", (req, res) => {
+  const exercises = db
+    .prepare("SELECT id, name, muscle_group FROM exercises ORDER BY id")
+    .all();
+  res.json(exercises);
+});
+
 app.post("/api/logs", requireAuth, (req, res) => {
   const { exercise_id, weight, reps, rpe } = req.body;
 
