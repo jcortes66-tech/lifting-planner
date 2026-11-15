@@ -5,6 +5,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { API_BASE_URL } from '@/constants/api';
 import { Spacing } from '@/constants/theme';
+import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 
 // Matches the shape returned by GET /api/logs in backend/index.js — one row per logged set, joined with its exercise name.
@@ -19,7 +20,7 @@ type LoggedSet = {
   logged_at: string;
 };
 
-// Datetime('now') gives "YYYY-MM-DD HH:MM:SS" in UTC with no timezone marker
+// Datetime('now') 
 function formatLoggedAt(logged_at: string) {
   const date = new Date(`${logged_at.replace(' ', 'T')}Z`);
   return date.toLocaleString(undefined, {
@@ -32,6 +33,7 @@ function formatLoggedAt(logged_at: string) {
 
 export default function ProgressScreen() {
   const theme = useTheme();
+  const { token, logout } = useAuth();
   const [logs, setLogs] = useState<LoggedSet[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -40,7 +42,15 @@ export default function ProgressScreen() {
   const fetchLogs = useCallback(async () => {
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/logs`);
+      const response = await fetch(`${API_BASE_URL}/api/logs`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 401) {
+        await logout();
+        return;
+      }
+
       if (!response.ok) {
         setError('Something went wrong loading your history.');
         return;
@@ -48,10 +58,10 @@ export default function ProgressScreen() {
       const data = await response.json();
       setLogs(data);
     } catch {
-      // Same failure mode as the Log tab 
+      // Same failure mode as the Log tab
       setError('Could not reach the server. Is it running?');
     }
-  }, []);
+  }, [token, logout]);
 
   // Load once when the screen first mounts.
   useEffect(() => {
@@ -74,8 +84,15 @@ export default function ProgressScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>
-        Progress
+      <ThemedText type="eyebrow" themeColor="textSecondary">
+        Over Time
+      </ThemedText>
+
+      <ThemedText style={styles.title}>
+        <ThemedText type="displayTitle">Your </ThemedText>
+        <ThemedText type="displayItalic" themeColor="textSecondary">
+          progress
+        </ThemedText>
       </ThemedText>
 
       {error && (
@@ -98,7 +115,7 @@ export default function ProgressScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.text} />
         }
         renderItem={({ item }) => (
-          <ThemedView type="backgroundElement" style={styles.row}>
+          <ThemedView style={[styles.row, { borderBottomColor: theme.border }]}>
             <ThemedText type="smallBold">{item.exercise_name}</ThemedText>
             <ThemedText themeColor="textSecondary">
               {item.weight} lbs × {item.reps} reps
@@ -135,12 +152,11 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.three,
   },
   listContent: {
-    gap: Spacing.two,
     paddingBottom: Spacing.five,
   },
   row: {
-    borderRadius: Spacing.two,
-    padding: Spacing.three,
+    borderBottomWidth: 1,
+    paddingVertical: Spacing.three,
     gap: Spacing.half,
   },
   date: {

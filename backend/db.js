@@ -11,8 +11,7 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
-  -- Each row is one logged-in session. The token is what the mobile
-  -- app will send back on future requests to prove who it is.
+  -- Each row is one logged-in session. 
   CREATE TABLE IF NOT EXISTS sessions (
     token TEXT PRIMARY KEY,
     user_id INTEGER NOT NULL,
@@ -38,13 +37,30 @@ db.exec(`
   );
 `);
 
-// Seed one starter exercise if the table is empty, so there's
-// something to log against before a "manage exercises" feature exists.
-const { count } = db.prepare("SELECT COUNT(*) AS count FROM exercises").get();
-if (count === 0) {
-  db.prepare(
-    "INSERT INTO exercises (name, muscle_group) VALUES (?, ?)"
-  ).run("Bench Press", "Chest");
+db.prepare("UPDATE exercises SET name = 'Barbell Bench Press' WHERE name = 'Bench Press'").run();
+
+// Full exercise catalog, grouped by muscle group to match the Guides tab.
+const EXERCISES = [
+  ["Barbell Back Squat", "Legs"],
+  ["Romanian Deadlift (RDL)", "Legs"],
+  ["Lat Pulldown", "Back"],
+  ["Seated Cable Row", "Back"],
+  ["Incline Dumbbell Press", "Chest"],
+  ["Cable Chest Fly", "Chest"],
+  ["Barbell Bench Press", "Chest"],
+  ["Dumbbell Shoulder Press", "Shoulders"],
+  ["Dumbbell Lateral Raise", "Shoulders"],
+  ["Dumbbell Bicep Curl", "Arms"],
+  ["Tricep Rope Pushdown", "Arms"],
+  ["Plank", "Core"],
+  ["Hanging Knee Raise", "Core"],
+];
+
+const insertExercise = db.prepare(
+  "INSERT OR IGNORE INTO exercises (name, muscle_group) VALUES (?, ?)"
+);
+for (const [name, muscleGroup] of EXERCISES) {
+  insertExercise.run(name, muscleGroup);
 }
 
 module.exports = db;

@@ -1,10 +1,21 @@
 import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
 
-import { Fonts, ThemeColor } from '@/constants/theme';
+import { DisplayFonts, Fonts, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
-  type?: 'default' | 'title' | 'small' | 'smallBold' | 'subtitle' | 'link' | 'linkPrimary' | 'code';
+  type?:
+    | 'default'
+    | 'title'
+    | 'small'
+    | 'smallBold'
+    | 'subtitle'
+    | 'link'
+    | 'linkPrimary'
+    | 'code'
+    | 'eyebrow'
+    | 'displayTitle'
+    | 'displayItalic';
   themeColor?: ThemeColor;
 };
 
@@ -23,6 +34,9 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
         type === 'link' && styles.link,
         type === 'linkPrimary' && styles.linkPrimary,
         type === 'code' && styles.code,
+        type === 'eyebrow' && styles.eyebrow,
+        type === 'displayTitle' && styles.displayTitle,
+        type === 'displayItalic' && styles.displayItalic,
         style,
       ]}
       {...rest}
@@ -69,5 +83,25 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.mono,
     fontWeight: Platform.select({ android: 700 }) ?? 500,
     fontSize: 12,
+  },
+  // A small uppercase, letter-spaced label
+  eyebrow: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '600',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  // The main serif headline style
+  displayTitle: {
+    fontFamily: DisplayFonts.regular,
+    fontSize: 40,
+    lineHeight: 46,
+  },
+  // Same size as displayTitle
+  displayItalic: {
+    fontFamily: DisplayFonts.italic,
+    fontSize: 40,
+    lineHeight: 46,
   },
 });
