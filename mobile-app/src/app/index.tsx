@@ -16,11 +16,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { API_BASE_URL } from '@/constants/api';
 import { BottomTabInset, Spacing } from '@/constants/theme';
+import { GOALS_KEY } from '@/constants/profile-options';
 import { useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
 
-// Where the Goals text is saved on the device.
-const GOALS_KEY = 'overview_goals';
 
 // A new quote each day, cycling through the list
 const QUOTES = [

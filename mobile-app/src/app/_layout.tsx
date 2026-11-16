@@ -10,6 +10,7 @@ import { ActivityIndicator, useColorScheme } from 'react-native';
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 import { AuthScreen } from '@/components/auth-screen';
+import { OnboardingScreen } from '@/components/onboarding-screen';
 import { ThemedView } from '@/components/themed-view';
 import { AuthProvider, useAuth } from '@/context/auth-context';
 import { useTheme } from '@/hooks/use-theme';
@@ -18,7 +19,7 @@ SplashScreen.preventAutoHideAsync();
 
 // Shows the tabs once logged in, or the login/signup screen if not.
 function RootNavigator() {
-  const { token, isLoading: authLoading } = useAuth();
+  const { token, needsOnboarding, isLoading: authLoading } = useAuth();
   const [fontsLoaded] = useFonts({
     PlayfairDisplay_400Regular,
     PlayfairDisplay_400Regular_Italic,
@@ -33,7 +34,8 @@ function RootNavigator() {
     );
   }
 
-  return token ? <AppTabs /> : <AuthScreen />;
+  if (!token) return <AuthScreen />;
+  return needsOnboarding ? <OnboardingScreen /> : <AppTabs />;
 }
 
 export default function TabLayout() {

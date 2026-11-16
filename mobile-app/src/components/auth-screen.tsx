@@ -74,8 +74,9 @@ export function AuthScreen() {
         return;
       }
 
-      // Saves the token and flips the root layout over to the tabs.
-      await login(loginData.token, loginData.user.email);
+    // Saves the token and flips the root layout over to the tabs
+    // (or the onboarding questionnaire, for a brand-new account).
+    await login(loginData.token, loginData.user.email, { isNewAccount: mode === 'signup' });
     } catch {
       setStatus({ type: 'error', message: 'Could not reach the server. Is it running?' });
     } finally {

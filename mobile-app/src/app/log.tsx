@@ -165,11 +165,6 @@ export default function LogScreen() {
             <ThemedText type="eyebrow" themeColor="textSecondary">
               Today&apos;s Work
             </ThemedText>
-            <Pressable onPress={logout}>
-              <ThemedText type="small" themeColor="textSecondary">
-                Log Out
-              </ThemedText>
-            </Pressable>
           </View>
           <ThemedText>
             <ThemedText type="displayTitle">Log a </ThemedText>

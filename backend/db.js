@@ -64,3 +64,9 @@ for (const [name, muscleGroup] of EXERCISES) {
 }
 
 module.exports = db;
+
+// Add the `name` column to users 
+const userColumns = db.prepare("PRAGMA table_info(users)").all();
+if (!userColumns.some((column) => column.name === "name")) {
+  db.exec("ALTER TABLE users ADD COLUMN name TEXT");
+}
