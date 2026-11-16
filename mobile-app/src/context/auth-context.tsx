@@ -1,6 +1,8 @@
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
+import { FITNESS_LEVEL_KEY, GOALS_KEY } from '@/constants/profile-options';
+
 // Keys used to save data on the device.
 const TOKEN_KEY = 'auth_token';
 const EMAIL_KEY = 'auth_email';
@@ -50,6 +52,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setEmail(newEmail);
 
     if (options?.isNewAccount) {
+      // Goals and Fitness Level are saved locally on the device, not tied to a specific account 
+      await SecureStore.deleteItemAsync(GOALS_KEY);
+      await SecureStore.deleteItemAsync(FITNESS_LEVEL_KEY);
       await SecureStore.setItemAsync(ONBOARDING_PENDING_KEY, 'true');
       setNeedsOnboarding(true);
     }
