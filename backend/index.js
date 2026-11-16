@@ -76,6 +76,51 @@ app.post("/api/login", (req, res) => {
   res.json({ token, user: { id: user.id, email } });
 });
 
+app.get("/api/me", requireAuth, (req, res) => {
+  const user = db
+    .prepare("SELECT id, email, name, created_at FROM users WHERE id = ?")
+    .get(req.userId);
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
+app.patch("/api/me", requireAuth, (req, res) => {
+  const { name, email } = req.body;
+
+  if (email !== undefined) {
+    if (typeof email !== "string" || !email.includes("@")) {
+      return res.status(400).json({ error: "A valid email is required" });
+    }
+    const existing = db
+      .prepare("SELECT id FROM users WHERE email = ? AND id != ?")
+      .get(email, req.userId);
+    if (existing) {
+      return res.status(409).json({ error: "An account with that email already exists" });
+    }
+  }
+
+  if (name !== undefined && typeof name !== "string") {
+    return res.status(400).json({ error: "Name must be text" });
+  }
+
+  if (email !== undefined) {
+    db.prepare("UPDATE users SET email = ? WHERE id = ?").run(email, req.userId);
+  }
+  if (name !== undefined) {
+    db.prepare("UPDATE users SET name = ? WHERE id = ?").run(name, req.userId);
+  }
+
+  const user = db
+    .prepare("SELECT id, email, name, created_at FROM users WHERE id = ?")
+    .get(req.userId);
+
+  res.json(user);
+});
+
 app.get("/api/exercises", (req, res) => {
   const exercises = db
     .prepare("SELECT id, name, muscle_group FROM exercises ORDER BY id")
